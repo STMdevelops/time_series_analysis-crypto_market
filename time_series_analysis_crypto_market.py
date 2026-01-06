@@ -13,6 +13,7 @@ from sklearn.metrics import mean_squared_error
 from math import sqrt
 
 #%%
+# --------------------------- Select Data via API ---------------------------
 btc = yf.Ticker("BTC-GBP")
 eth = yf.Ticker("ETH-GBP")
 
@@ -30,3 +31,23 @@ data_btc
 
 #%%
 data_eth
+
+#%% 
+# --------------------------- Preview Data Graphically ---------------------------
+data_btc.Close["BTC-GBP"].plot(title="BTC/GBP");
+
+#%%
+data_eth.Close["ETH-GBP"].plot(title="ETH/GBP");
+
+#%%
+# --------------------------- Adjust Data for Inflation ---------------------------
+cpi.update()
+close1 = data_btc.copy()
+close1.rename(columns={"^DJI" : "DJI"}, inplace=True)
+close1
+
+#%%
+cpi.update()
+close2 = data_eth.Close.copy()
+close2.rename(columns={"^DJI" : "DJI"}, inplace=True)
+close2
