@@ -12,6 +12,7 @@ import pmdarima as pm
 from sklearn.metrics import mean_squared_error
 from math import sqrt
 from datetime import date
+from methods import safe_cpi_get
 
 #%%
 # --------------------------- Select Data via API ---------------------------
@@ -44,13 +45,13 @@ data_eth.Close["ETH-GBP"].plot(title="ETH/GBP");
 # --------------------------- Adjust Data for Inflation ---------------------------
 cpi.update()
 close_btc = data_btc.copy()
-close_btc.rename(columns={"^DJI" : "DJI"}, inplace=True)
+close_btc.rename(columns={"^DJI" : "DJI","BTC-GBP" : "BTC"}, inplace=True)
 close_btc
 
 #%%
 cpi.update()
 close_eth = data_eth.Close.copy()
-close_eth.rename(columns={"^DJI" : "DJI"}, inplace=True)
+close_eth.rename(columns={"^DJI" : "DJI", "ETH-GBP" : "ETH"}, inplace=True)
 close_eth
 
 #%%
@@ -76,8 +77,8 @@ cpi_eth_202301 = cpi.get(date(2023,1,1))
 cpi_eth_202301
 
 #%%
-cpi_mon_btc['factor'] = cpi_mon_btc.index.map(lambda x: cpi_btc_202301 / cpi.get(x.date()))
-cpi_mon_eth['factor'] = cpi_mon_eth.index.map(lambda x: cpi_eth_202301 / cpi.get(x.date()))
+cpi_mon_btc['factor'] = cpi_mon_btc.index.map(lambda x: cpi_btc_202301 / safe_cpi_get(x.date()))
+cpi_mon_eth['factor'] = cpi_mon_eth.index.map(lambda x: cpi_eth_202301 / safe_cpi_get(x.date()))
 
 #%%
 cpi_mon_btc['factor'] = close_btc.index.to_period('M').map(cpi_mon_btc.factor.to_period('M').to_dict())
